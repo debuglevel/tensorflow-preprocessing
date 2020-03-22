@@ -1,0 +1,90 @@
+#!/usr/bin/env python3
+
+from __future__ import division
+from PIL import Image
+import math
+import os
+from os import listdir
+from os.path import isfile, join
+import argparse
+import hashlib
+
+def slice_picture(picture_path, filename_prefix, output_directory, skip_top, slice_height, slices):
+    print("Opening image '%s'..." % picture_path)
+    image = Image.open(picture_path)
+
+    picture_width, picture_height = image.size
+    
+    boundry_top = skip_top
+    boundry_left = 0
+    boundry_right = picture_width
+    
+    for slice in range(slices):
+        count = slice + 1
+        print("Processing slice #%d of '%s'..." % (count, picture_path))
+
+        boundry_bottom = int(boundry_top + slice_height)
+
+        boundry_box = (boundry_left, boundry_top, boundry_right, boundry_bottom)
+        #print("Boundries Left=%d Right=%d Top=%d Bottom= %d", (boundry_left, boundry_right, boundry_top, boundry_bottom))
+
+        # do the crop
+        print("Cropping image into slice...")
+        working_slice = image.crop(boundry_box)
+
+        # save the slice
+        save_filename = os.path.join(output_directory, filename_prefix + "__slice_" + str(count)+".jpg")
+        print("Saving slice to '%s'..." % save_filename)
+        if not os.path.exists(output_directory):
+            os.makedirs(output_directory)
+
+        if os.path.exists(save_filename):
+            os.remove(save_filename)
+        working_slice.save(save_filename)
+
+        # calculate next iteration
+        boundry_top += slice_height
+        count += 1
+
+def sha256sum(filename):
+    h  = hashlib.sha256()
+    b  = bytearray(128*1024)
+    mv = memoryview(b)
+    with open(filename, 'rb', buffering=0) as f:
+        for n in iter(lambda : f.readinto(mv), 0):
+            h.update(mv[:n])
+    return h.hexdigest()
+
+if __name__ == '__main__':
+    print("Generating item pictures from sheet...")
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--picture')
+    parser.add_argument('--side')
+    parser.add_argument('--outputdirectory')
+    args = parser.parse_args()
+    
+    probably_unique_id = os.path.basename(args.picture) + "_" + args.side + "_" + sha256sum(args.picture)
+    if args.side == 'front':
+        slice_picture(
+            picture_path = args.picture,
+            filename_prefix = probably_unique_id, 
+            output_directory = args.outputdirectory,
+            skip_top = 1416,
+            slice_height = 106,
+            slices = 18
+            )
+    elif args.side == 'back':
+        slice_picture(
+            picture_path = args.picture,
+            filename_prefix = probably_unique_id, 
+            output_directory = args.outputdirectory,
+            skip_top = 399,
+            slice_height = 106,
+            slices = 4
+            )
+        pass
+    else:
+        # TODO: tell that this option is illegal
+        pass
+    

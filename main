@@ -1,0 +1,17 @@
+#!/bin/bash
+
+echo "Processing original data..."
+./preprocessing-scripts/main
+echo "Processed original data"
+
+# echo "Training Tensorflow model..."
+# ./training-scripts/main
+# echo "Trained Tensorflow data"
+
+# ...
+# train tensorflow model
+# ...
+
+# ...
+# test tensorflow model
+# ...

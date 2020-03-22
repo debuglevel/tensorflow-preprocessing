@@ -1,0 +1,55 @@
+#!/bin/bash
+# Note: The working directory is not "original-processing" but the project root.
+
+echo "Splitting scanned originals into front and back side for each item value..."
+
+readarray -t questionnaires < <(find original-data -mindepth 1 -maxdepth 1 -type d -printf '%P\n')
+for questionnaire in "${questionnaires[@]}"; do
+    echo "Processing questionnaire '$questionnaire'..."
+
+    readarray -t itemvalues < <(find "original-data/$questionnaire" -mindepth 1 -maxdepth 1 -type d -printf '%P\n')
+    for itemvalue in "${itemvalues[@]}"; do
+        echo "Processing item value '$itemvalue' of questionnaire '$questionnaire'..."
+        mkdir -p "processing-temp-data/$questionnaire/$itemvalue"
+
+        find "original-data/$questionnaire/$itemvalue" -name "*.tif" | while read tiff_file; do 
+          echo "Converting '$tiff_file' to 'processing-temp-data/$questionnaire/$itemvalue/*.jpg'..."
+          mogrify -format jpg -path "processing-temp-data/$questionnaire/$itemvalue" "$tiff_file"
+          #echo "Converted 'original-data/$questionnaire/$itemvalue/$tiff_file' to 'processing-temp-data/$questionnaire/$itemvalue/${tiff_file%.*}.jpg'"
+        done
+
+        echo "Moving front and back sides to separate folders..."
+        declare -a sides=("front" "back")
+        for side in "${sides[@]}"; do
+          mkdir -p "processing-temp-data/$questionnaire/$itemvalue/front/"
+          mkdir -p "processing-temp-data/$questionnaire/$itemvalue/back/"
+        done
+
+        mv "processing-temp-data/$questionnaire/$itemvalue/"*[02468].jpg "processing-temp-data/$questionnaire/$itemvalue/front/"
+        mv "processing-temp-data/$questionnaire/$itemvalue/"*[13579].jpg "processing-temp-data/$questionnaire/$itemvalue/back/"
+        echo "Moved front and back sides to separate folders"
+        
+        for side in "${sides[@]}"; do
+          echo "Splitting '$side' into item pictures..."
+          find "processing-temp-data/$questionnaire/$itemvalue/$side/" -name "*.jpg" | while read picture_file; do 
+            echo "Splitting '$side' -> '$picture_file' into item pictures..."
+            "preprocessing-scripts/$questionnaire/main" --side="$side" --picture="$picture_file" --outputdirectory="training-data/$itemvalue/"
+            echo "Splitted '$side' -> '$picture_file' into item pictures"
+          done
+          echo "Splitted '$side' into item pictures"
+        done
+
+        echo "Deleting temporary files..."
+        echo rm -rf "processing-temp-data/$questionnaire/$itemvalue"
+        echo "Deleted temporary files"
+        
+        echo "Processed item value '$itemvalue' of questionnaire '$questionnaire'"
+    done
+
+    echo "Deleting temporary files..."
+        echo rm -rf "processing-temp-data/$questionnaire"
+        echo "Deleted temporary files"
+    
+    echo "Processed questionnaire '$questionnaire'"
+done
+

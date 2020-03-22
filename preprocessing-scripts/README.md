@@ -1,0 +1,1 @@
+This directory contains script(s) to preprocess data in the `original-data` folder and put results into `training-data`. It does not really matter how these script files are structured, in which language they are written et cetera. Convention is, the main script is called `main`.

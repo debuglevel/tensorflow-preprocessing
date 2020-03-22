@@ -1,0 +1,1 @@
+Unfortunately, this questionnaire is copyrighted. It's only stored within the git repository to easen the life of the developer :-/

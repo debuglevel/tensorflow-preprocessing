@@ -1,0 +1,9 @@
+version: '3'
+
+#services:
+#  learning:
+#    image: python:3
+#    stdin_open: true
+#    tty: true
+#    volumes:
+#      - ./sample_data:/sample_data
