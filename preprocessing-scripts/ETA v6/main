@@ -82,8 +82,15 @@ def get_subimage_definition(item_number):
     elif 7 <= item_number <= 25:
         # front side
         #side = "front"
-        left = 194 / 2478
-        right = 2298 / 2478
+        
+        # full item
+        #left = 194 / 2478
+        #right = 2298 / 2478
+
+        # only checkboxes
+        left = 1747 / 2478
+        right = 2307 / 2478
+
         item_height = 1632 - 1526
         top = (1318 + (item_number-7)*item_height) / 3504
         bottom = (1318 + (item_number-7+1)*item_height) / 3504
@@ -91,8 +98,14 @@ def get_subimage_definition(item_number):
     elif 26 <= item_number <= 29:
         # back side
         #side = "back"
-        left = 284 / 2478
+
+        # full item
+        #left = 284 / 2478
+        
+        # only checkboxes
+        left = 1820 / 2478
         right = 2366 / 2478
+        
         item_height = 606 - 504
         top = (400 + (item_number-26)*item_height) / 3504
         bottom = (400 + (item_number-26+1)*item_height) / 3504
