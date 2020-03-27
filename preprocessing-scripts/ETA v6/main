@@ -8,43 +8,64 @@ from os import listdir
 from os.path import isfile, join
 import argparse
 import hashlib
+import picture_cutter.cutter
 
-def slice_picture(picture_path, filename_prefix, output_directory, skip_top, slice_height, slices):
+# def slice_picture(picture_path, filename_prefix, output_directory, skip_top, slice_height, slices):
+#     print("Opening image '%s'..." % picture_path)
+#     image = Image.open(picture_path)
+
+#     picture_width, picture_height = image.size
+    
+#     boundry_top = skip_top
+#     boundry_left = 0
+#     boundry_right = picture_width
+    
+#     for slice in range(slices):
+#         count = slice + 1
+#         print("Processing slice #%d of '%s'..." % (count, picture_path))
+
+#         boundry_bottom = int(boundry_top + slice_height)
+
+#         boundry_box = (boundry_left, boundry_top, boundry_right, boundry_bottom)
+#         #print("Boundries Left=%d Right=%d Top=%d Bottom= %d", (boundry_left, boundry_right, boundry_top, boundry_bottom))
+
+#         # do the crop
+#         print("Cropping image into slice...")
+#         working_slice = image.crop(boundry_box)
+
+#         # save the slice
+#         save_filename = os.path.join(output_directory, filename_prefix + "__slice_" + str(count)+".jpg")
+#         print("Saving slice to '%s'..." % save_filename)
+#         if not os.path.exists(output_directory):
+#             os.makedirs(output_directory)
+
+#         if os.path.exists(save_filename):
+#             os.remove(save_filename)
+#         working_slice.save(save_filename)
+
+#         # calculate next iteration
+#         boundry_top += slice_height
+#         count += 1
+
+def cut_subimages(picture_path, filename_prefix, output_directory, subimage_definitions):
     print("Opening image '%s'..." % picture_path)
     image = Image.open(picture_path)
 
-    picture_width, picture_height = image.size
-    
-    boundry_top = skip_top
-    boundry_left = 0
-    boundry_right = picture_width
-    
-    for slice in range(slices):
-        count = slice + 1
-        print("Processing slice #%d of '%s'..." % (count, picture_path))
+    # crop image into subimages
+    print("Cutting image into subimages...")
+    subimages = picture_cutter.cutter.cut(image, subimage_definitions)
 
-        boundry_bottom = int(boundry_top + slice_height)
-
-        boundry_box = (boundry_left, boundry_top, boundry_right, boundry_bottom)
-        #print("Boundries Left=%d Right=%d Top=%d Bottom= %d", (boundry_left, boundry_right, boundry_top, boundry_bottom))
-
-        # do the crop
-        print("Cropping image into slice...")
-        working_slice = image.crop(boundry_box)
-
-        # save the slice
-        save_filename = os.path.join(output_directory, filename_prefix + "__slice_" + str(count)+".jpg")
-        print("Saving slice to '%s'..." % save_filename)
+    # save subimages
+    for item_key, subimage in subimages.items():
+        save_filename = filename_prefix + "_" + str(item_key) + ".jpg"
+        save_path = os.path.join(output_directory, save_filename)
+        print("Saving subimage to '%s'..." % save_path)
         if not os.path.exists(output_directory):
             os.makedirs(output_directory)
 
-        if os.path.exists(save_filename):
-            os.remove(save_filename)
-        working_slice.save(save_filename)
-
-        # calculate next iteration
-        boundry_top += slice_height
-        count += 1
+        if os.path.exists(save_path):
+            os.remove(save_path)
+        subimage.save(save_path)
 
 def sha256sum(filename):
     h  = hashlib.sha256()
@@ -55,6 +76,39 @@ def sha256sum(filename):
             h.update(mv[:n])
     return h.hexdigest()
 
+def get_subimage_definition(item_number):
+    if item_number < 7:
+        raise Exception("item number must be at least 7")
+    elif 7 <= item_number <= 25:
+        # front side
+        #side = "front"
+        left = 194 / 2478
+        right = 2298 / 2478
+        item_height = 1632 - 1526
+        top = (1318 + (item_number-7)*item_height) / 3504
+        bottom = (1318 + (item_number-7+1)*item_height) / 3504
+        pass
+    elif 26 <= item_number <= 29:
+        # back side
+        #side = "back"
+        left = 284 / 2478
+        right = 2366 / 2478
+        item_height = 606 - 504
+        top = (400 + (item_number-26)*item_height) / 3504
+        bottom = (400 + (item_number-26+1)*item_height) / 3504
+        pass
+    elif item_number > 29:
+        raise Exception("item number must be at most 29")
+    
+    return {
+            "item"+str(item_number):  {
+                "top": top,
+                "bottom": bottom,
+                "left": left,
+                "right": right
+            } 
+        }
+
 if __name__ == '__main__':
     print("Generating item pictures from sheet...")
 
@@ -64,27 +118,26 @@ if __name__ == '__main__':
     parser.add_argument('--outputdirectory')
     args = parser.parse_args()
     
-    probably_unique_id = os.path.basename(args.picture) + "_" + args.side + "_" + sha256sum(args.picture)
+    probably_unique_id = os.path.basename(args.picture) + "_" + sha256sum(args.picture) + "_" + args.side
+
     if args.side == 'front':
-        slice_picture(
-            picture_path = args.picture,
-            filename_prefix = probably_unique_id, 
-            output_directory = args.outputdirectory,
-            skip_top = 1416,
-            slice_height = 106,
-            slices = 18
-            )
+        item_numbers = range(7, 25 + 1)
     elif args.side == 'back':
-        slice_picture(
-            picture_path = args.picture,
-            filename_prefix = probably_unique_id, 
-            output_directory = args.outputdirectory,
-            skip_top = 399,
-            slice_height = 106,
-            slices = 4
-            )
-        pass
+        item_numbers = range(26, 29 + 1)
     else:
-        # TODO: tell that this option is illegal
-        pass
+        raise Exception("that option for side is illegal")
+
+    subimage_definitions = {}
+    for item_number in item_numbers:
+        subimage_definition = get_subimage_definition(item_number)
+        subimage_definitions.update(subimage_definition)
+
+    cut_subimages(
+        picture_path = args.picture,
+        filename_prefix = probably_unique_id, 
+        output_directory = args.outputdirectory,
+        subimage_definitions = subimage_definitions
+    )
+
+    
     
