@@ -8,8 +8,8 @@ CONFIG_IMAGE_SIZE=224
 #        - therefore, for the final model should actually take many epochs, but for development it would take to long
 #        - with fine tuning enabled, accuracy gets pretty good in a few epochs (0.98 in epoch 5); but it takes much longer
 #CONFIG_TRAINING_EPOCHS=1
-CONFIG_TRAINING_EPOCHS=2
-#CONFIG_TRAINING_EPOCHS=5
+#CONFIG_TRAINING_EPOCHS=2
+CONFIG_TRAINING_EPOCHS=5
 #CONFIG_TRAINING_EPOCHS=100
 
 # Notes: - might easily exceed RAM of a Windows Docker VM,
