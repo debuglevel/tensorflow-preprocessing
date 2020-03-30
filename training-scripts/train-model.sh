@@ -3,9 +3,9 @@ DIR=$(dirname $0)
 
 VERSION=$1
 MODULE="https://tfhub.dev/google/tf2-preview/mobilenet_v2/feature_vector/4"
-SAVED_MODEL_DIRECTORY="output/model/$VERSION"
-LABELS_OUTPUT_FILE="output/class_labels.txt"
-TFLITE_OUTPUT_FILE="output/mobile_model.tflite"
+SAVED_MODEL_DIRECTORY="trained-model/model/$VERSION"
+LABELS_OUTPUT_FILE="trained-model/class_labels.txt"
+TFLITE_OUTPUT_FILE="trained-model/mobile_model.tflite"
 IMAGE_DIRECTORY=training-data
 
 echo "Training model..."

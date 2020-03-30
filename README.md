@@ -19,7 +19,7 @@ The rather easy and more common part is to take the pircture files in the pre-cl
 ```
 docker build -t tf-training training-scripts
 rm -rf trained-model/*
-docker run -ti --rm -v ${PWD}/training-data:/app/training-data -v ${PWD}/trained-model:/app/output tf-training
+docker run -ti --rm -v ${PWD}/training-data:/app/training-data -v ${PWD}/trained-model:/app/trained-model tf-training
 ```
 
 # Tensorflow model testing
