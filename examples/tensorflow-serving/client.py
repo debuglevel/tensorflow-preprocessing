@@ -2,12 +2,25 @@ import requests
 import json
 import base64
 from PIL import Image
-from keras.preprocessing import image
 import numpy as np
 import argparse
 import time
 
-def read_image_as_tensor_thingy(filename, height, width):
+def read_image_as_tensor(filename, height, width):
+  return read_image_as_tensor_rest(filename, height, width)
+  #return read_image_as_tensor_builtin(filename, height, width)
+
+def read_image_as_tensor_rest(filename, height, width):
+  url = f'http://localhost:5000/v1/pictures/?height={height}&width={width}'
+  data = open(filename, "rb").read()
+  response = requests.post(url, data=data)
+  json_response = response.json()
+  return json_response["tensor"]
+
+def read_image_as_tensor_builtin(filename, height, width):
+  # importing keras/tensorflow is quite slow; only do it if needed
+  from keras.preprocessing import image
+
   # CAVEAT: height and width might be switched; did not verify.
   img = image.load_img(filename, target_size=(height, width))
   img_array = image.img_to_array(img) / 255.
@@ -61,7 +74,7 @@ def main():
   filename = args.picture
 
   #print_model_details(model_name="questionnaire", server="http://localhost:8501")
-  tensor_thingy = read_image_as_tensor_thingy(filename, height=224, width=224)
+  tensor_thingy = read_image_as_tensor(filename, height=224, width=224)
   json = build_json(tensor_thingy)
   send_request(json, model_name="questionnaire", server="http://localhost:8501")
 
