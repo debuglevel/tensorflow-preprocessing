@@ -1,6 +1,4 @@
 #!/bin/bash
-#cd tensorflow
 ./training-scripts/train-model.sh
 ERRORCODE=$?
-#cd ..
 exit $ERRORCODE
