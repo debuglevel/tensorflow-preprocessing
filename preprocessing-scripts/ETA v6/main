@@ -51,12 +51,12 @@ def get_subimage_definition(item_number):
         #right = 2298 / 2478
 
         # only checkboxes
-        left = 1747 / 2478
-        right = 2307 / 2478
+        left = 1747 / 2480
+        right = 2307 / 2480
 
-        item_height = 1632 - 1526
-        top = (1318 + (item_number-7)*item_height) / 3504
-        bottom = (1318 + (item_number-7+1)*item_height) / 3504
+        item_height = 1632 - 1526 + 0.5
+        top = (1316 + (item_number-7)*item_height) / 3507
+        bottom = (1316 + (item_number-7+1)*item_height) / 3507
         pass
     elif 26 <= item_number <= 29:
         # back side
@@ -66,12 +66,12 @@ def get_subimage_definition(item_number):
         #left = 284 / 2478
         
         # only checkboxes
-        left = 1820 / 2478
-        right = 2366 / 2478
+        left = (1820+9) / 2480
+        right = (2366+16+9) / 2480
         
-        item_height = 606 - 504
-        top = (400 + (item_number-26)*item_height) / 3504
-        bottom = (400 + (item_number-26+1)*item_height) / 3504
+        item_height = 606 - 504 + 4 + 0.5
+        top = (400-1 + (item_number-26)*item_height) / 3507
+        bottom = (400-1 + (item_number-26+1)*item_height) / 3507
         pass
     elif item_number > 29:
         raise Exception("item number must be at most 29")
