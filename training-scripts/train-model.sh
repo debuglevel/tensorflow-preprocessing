@@ -7,19 +7,22 @@ SAVED_MODEL_DIRECTORY="trained-model/model/$VERSION"
 LABELS_OUTPUT_FILE="trained-model/model/$VERSION/class_labels.txt"
 TFLITE_OUTPUT_FILE="trained-model/model/$VERSION/mobile_model.tflite"
 IMAGE_DIRECTORY=training-data
+TRAINING_INFORMATION_FILE="trained-model/model/$VERSION/training_information.txt"
+TRAINING_FILES=$(find $IMAGE_DIRECTORY -mindepth 1 -type f | wc -l)
+
+mkdir -p $SAVED_MODEL_DIRECTORY
 
 echo "Training model..."
 echo "  Image directory: $IMAGE_DIRECTORY"
-echo "  Image size: ${CONFIG_IMAGE_SIZE}"
-echo "  Module: $MODULE"
-echo "  Fine-Tuning: $CONFIG_FINE_TUNING"
-echo "  Epochs: $CONFIG_TRAINING_EPOCHS"
+echo "  Image count: $TRAINING_FILES" | tee -a "$TRAINING_INFORMATION_FILE"
+echo "  Image size: ${CONFIG_IMAGE_SIZE}" | tee -a "$TRAINING_INFORMATION_FILE"
+echo "  Module: $MODULE" | tee -a "$TRAINING_INFORMATION_FILE"
+echo "  Fine-Tuning: $CONFIG_FINE_TUNING" | tee -a "$TRAINING_INFORMATION_FILE"
+echo "  Epochs: $CONFIG_TRAINING_EPOCHS" | tee -a "$TRAINING_INFORMATION_FILE"
 echo "  Version: $VERSION"
 echo "  SavedModel directory: $SAVED_MODEL_DIRECTORY"
 echo "  Labels output file: $LABELS_OUTPUT_FILE"
 echo "  TFlite output file: $TFLITE_OUTPUT_FILE"
-
-mkdir -p $SAVED_MODEL_DIRECTORY
 
 make_image_classifier \
   --image_dir $IMAGE_DIRECTORY \
