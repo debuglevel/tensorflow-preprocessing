@@ -36,7 +36,7 @@ Not yet possible; see [https://github.com/tensorflow/hub/issues/541]
 # TensorFlow serving
 
 ```
-docker run -ti --rm -p 8501:8501 -v ${PWD}/trained-model/model:/models/questionnaire/1 -e MODEL_NAME=questionnaire tensorflow/serving
+docker run -ti --rm -p 8501:8501 -v ${PWD}/trained-model/model:/models/questionnaire/ -e MODEL_NAME=questionnaire tensorflow/serving
 for i in ./testing-data/ETA\ v6/1/*.jpg; do python3 ./examples/tensorflow-serving/client.py --picture="$i" 2> /dev/null; done
 ```
 
