@@ -1,4 +1,14 @@
 #!/bin/bash
-./training-scripts/train-model.sh
+readarray -t versions < <(find output/model -mindepth 1 -maxdepth 1 -type d -printf '%P\n')
+
+maximum_version="00000"
+for n in "${versions[@]}" ; do
+    ((n > max)) && maximum_version=$n
+done
+
+next_version=$((maximum_version+1))
+printf -v next_version "%05d" $next_version
+
+./training-scripts/train-model.sh $next_version
 ERRORCODE=$?
 exit $ERRORCODE
