@@ -26,7 +26,7 @@ docker run -ti --rm -v ${PWD}/training-data:/app/training-data -v ${PWD}/trained
 
 ```
 docker build -t tf-testing testing-scripts
-docker run -ti --rm -v ${PWD}/testing-data:/app/testing-data -v ${PWD}/trained-model:/app/data tf-testing
+docker run -ti --rm -v ${PWD}/testing-data:/app/testing-data -v ${PWD}/trained-model:/app/trained-model tf-testing
 ```
 
 # TensorBoard visualization

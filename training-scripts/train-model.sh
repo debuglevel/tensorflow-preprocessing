@@ -19,6 +19,8 @@ echo "  SavedModel directory: $SAVED_MODEL_DIRECTORY"
 echo "  Labels output file: $LABELS_OUTPUT_FILE"
 echo "  TFlite output file: $TFLITE_OUTPUT_FILE"
 
+mkdir -p $SAVED_MODEL_DIRECTORY
+
 make_image_classifier \
   --image_dir $IMAGE_DIRECTORY \
   --tfhub_module $MODULE \

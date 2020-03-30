@@ -2,14 +2,20 @@
 
 IMAGE_TO_CLASSIFY="$1"
 
+readarray -t versions < <(find trained-model/model -mindepth 1 -maxdepth 1 -type d -printf '%P\n')
+maximum_version="00000"
+for n in "${versions[@]}" ; do
+    ((n > max)) && maximum_version=$n
+done
+
 readarray -t pictures < <(find testing-data -type f)
 for picture in "${pictures[@]}"; do
   echo " ==== $picture ==== "
   python testing-scripts/label_image.py \
     --input_mean 0 \
     --input_std 255 \
-    --model_file data/mobile_model.tflite \
-    --label_file data/class_labels.txt \
+    --model_file trained-model/model/$maximum_version/mobile_model.tflite \
+    --label_file trained-model/model/$maximum_version/class_labels.txt \
     --image "$picture" 2> /dev/null
   echo
 done
