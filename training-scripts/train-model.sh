@@ -6,11 +6,13 @@ MODULE="https://tfhub.dev/google/tf2-preview/mobilenet_v2/feature_vector/4"
 SAVED_MODEL_DIRECTORY="trained-model/model/$VERSION"
 LABELS_OUTPUT_FILE="trained-model/model/$VERSION/class_labels.txt"
 TFLITE_OUTPUT_FILE="trained-model/model/$VERSION/mobile_model.tflite"
+SUMMARIES_DIRECTORY="trained-model/model/$VERSION/logs/"
 IMAGE_DIRECTORY=training-data
 TRAINING_INFORMATION_FILE="trained-model/model/$VERSION/training_information.txt"
 TRAINING_FILES=$(find $IMAGE_DIRECTORY -mindepth 1 -type f | wc -l)
 
 mkdir -p $SAVED_MODEL_DIRECTORY
+mkdir -p $SUMMARIES_DIRECTORY
 
 echo "Training model..."
 echo "  Image directory: $IMAGE_DIRECTORY"
@@ -23,6 +25,7 @@ echo "  Version: $VERSION"
 echo "  SavedModel directory: $SAVED_MODEL_DIRECTORY"
 echo "  Labels output file: $LABELS_OUTPUT_FILE"
 echo "  TFlite output file: $TFLITE_OUTPUT_FILE"
+echo "  Summaries directory: $SUMMARIES_DIRECTORY"
 
 make_image_classifier \
   --image_dir $IMAGE_DIRECTORY \
@@ -31,5 +34,6 @@ make_image_classifier \
   --saved_model_dir $SAVED_MODEL_DIRECTORY \
   --labels_output_file $LABELS_OUTPUT_FILE \
   --tflite_output_file $TFLITE_OUTPUT_FILE \
+  --summaries_dir $SUMMARIES_DIRECTORY \
   $CONFIG_FINE_TUNING \
   --train_epochs $CONFIG_TRAINING_EPOCHS

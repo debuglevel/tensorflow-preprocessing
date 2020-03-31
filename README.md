@@ -31,7 +31,11 @@ docker run -ti --rm -v ${PWD}/testing-data:/app/testing-data -v ${PWD}/trained-m
 
 # TensorBoard visualization
 
-Not yet possible; see [https://github.com/tensorflow/hub/issues/541]
+Not yet possible; see [https://github.com/tensorflow/hub/issues/541] and [https://github.com/tensorflow/hub/pull/551]
+
+```
+docker run -ti --rm tensorboard -p 6006:6006 -v ${PWD}/trained-model:/app/trained-model tensorboard --bind_all --logdir /app/trained-model/model/
+```
 
 # TensorFlow serving
 
