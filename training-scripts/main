@@ -1,9 +1,10 @@
 #!/bin/bash
 readarray -t versions < <(find trained-model/model -mindepth 1 -maxdepth 1 -type d -printf '%P\n')
 
-maximum_version="00000"
+# HACK: start with version 10000 instead of 00000 so that bash does not work in octal-number mode
+maximum_version="10000"
 for n in "${versions[@]}" ; do
-    ((n > max)) && maximum_version=$n
+    ((n > maximum_version)) && maximum_version=$n
 done
 
 next_version=$((maximum_version+1))
