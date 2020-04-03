@@ -73,11 +73,13 @@ def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('--picture',
                       help='Picture which should be classified')
-  parser.add_argument('--tensorflow-backend', default="builtin",
+  parser.add_argument('--tensorflow-backend',
+                      default="builtin",
                       help='Which TF backend should be used for picture conversion ("builtin" or "rest")')
   parser.add_argument('--print-model-details',
                       help='Whether to ask TF-Serving for details on the model')
-  parser.add_argument('--server', default="http://localhost:8501",
+  parser.add_argument('--server',
+                      default="http://localhost:8501",
                       help='URL of TF-Serving')
   args = parser.parse_args()
   filename = args.picture
