@@ -38,10 +38,10 @@ def build_tensorflowserving_payload(tensor):
     )
   return data
 
-def classify_tensor(tensor, model_name, server):
+def classify_tensor(tensor, model_name, tfserving_server):
   json_data = build_tensorflowserving_payload(tensor)
   headers = {"content-type": "application/json"}
-  json_response = requests.post(f'{server}/v1/models/{model_name}:predict', data=json_data, headers=headers)
+  json_response = requests.post(f'{tfserving_server}/v1/models/{model_name}:predict', data=json_data, headers=headers)
   predictions = json.loads(json_response.text)['predictions']
 
   predicted_class = np.argmax(predictions[0])
@@ -49,13 +49,13 @@ def classify_tensor(tensor, model_name, server):
   
   print(f'Predicted class: {predicted_class}')
 
-def print_model_details(server, model_name):
+def print_model_details(tfserving_server, model_name):
   print("==== model info ====")
-  dl_request = requests.get(f'{server}/v1/models/{model_name}')
+  dl_request = requests.get(f'{tfserving_server}/v1/models/{model_name}')
   dl_request.raise_for_status()
   print(dl_request.content.decode())
   print("== model metadata ==")
-  dl_request = requests.get(f'{server}/v1/models/{model_name}/metadata')
+  dl_request = requests.get(f'{tfserving_server}/v1/models/{model_name}/metadata')
   dl_request.raise_for_status()
   print(dl_request.content.decode())
   print("====================")
@@ -74,20 +74,20 @@ def main():
                       help='Which TF backend should be used for picture conversion ("builtin" or "rest")')
   parser.add_argument('--print-model-details',
                       help='Whether to ask TF-Serving for details on the model')
-  parser.add_argument('--server',
+  parser.add_argument('--tfserving-server',
                       default="http://localhost:8501",
                       help='URL of TF-Serving')
   args = parser.parse_args()
   filename = args.picture
   tensorflow_backend = args.tensorflow_backend
   print_model_details = args.print_model_details
-  server = args.server
+  tfserving_server = args.tfserving_server
 
   if print_model_details:
-    print_model_details(model_name="questionnaire", server=server)
+    print_model_details(model_name="questionnaire", tfserving_server=tfserving_server)
 
   tensor = get_picture_as_tensor(filename, height=224, width=224, tensorflow_backend=tensorflow_backend)
-  classify_tensor(tensor, model_name="questionnaire", server=server)
+  classify_tensor(tensor, model_name="questionnaire", tfserving_server=tfserving_server)
 
 if __name__ == '__main__':
   main()
