@@ -73,11 +73,15 @@ def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('--picture')
   parser.add_argument('--tensorflow-backend', default="builtin")
+  parser.add_argument('--print-model-details')
   args = parser.parse_args()
   filename = args.picture
   tensorflow_backend = args.tensorflow_backend
+  print_model_details = args.print_model_details
 
-  #print_model_details(model_name="questionnaire", server="http://localhost:8501")
+  if print_model_details:
+    print_model_details(model_name="questionnaire", server="http://localhost:8501")
+    
   tensor_thingy = read_image_as_tensor(filename, height=224, width=224, tensorflow_backend=tensorflow_backend)
   json = build_json(tensor_thingy)
   send_request(json, model_name="questionnaire", server="http://localhost:8501")
