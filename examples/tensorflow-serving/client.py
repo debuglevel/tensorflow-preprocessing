@@ -6,13 +6,10 @@ import numpy as np
 import argparse
 import time
 
-TENSORFLOW_BACKEND="REST"
-#TENSORFLOW_BACKEND="BUILTIN"
-
-def read_image_as_tensor(filename, height, width):
-  if TENSORFLOW_BACKEND == "REST":
+def read_image_as_tensor(filename, height, width, tensorflow_backend="builtin"):
+  if tensorflow_backend == "rest":
     return read_image_as_tensor_rest(filename, height, width)
-  elif TENSORFLOW_BACKEND == "BUILTIN":
+  elif tensorflow_backend == "builtin":
     return read_image_as_tensor_builtin(filename, height, width)
 
 def read_image_as_tensor_rest(filename, height, width):
@@ -75,11 +72,13 @@ def print_model_details(server, model_name):
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('--picture')
+  parser.add_argument('--tensorflow-backend', default="builtin")
   args = parser.parse_args()
   filename = args.picture
+  tensorflow_backend = args.tensorflow_backend
 
   #print_model_details(model_name="questionnaire", server="http://localhost:8501")
-  tensor_thingy = read_image_as_tensor(filename, height=224, width=224)
+  tensor_thingy = read_image_as_tensor(filename, height=224, width=224, tensorflow_backend=tensorflow_backend)
   json = build_json(tensor_thingy)
   send_request(json, model_name="questionnaire", server="http://localhost:8501")
 
