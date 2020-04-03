@@ -6,9 +6,14 @@ import numpy as np
 import argparse
 import time
 
+TENSORFLOW_BACKEND="REST"
+#TENSORFLOW_BACKEND="BUILTIN"
+
 def read_image_as_tensor(filename, height, width):
-  return read_image_as_tensor_rest(filename, height, width)
-  #return read_image_as_tensor_builtin(filename, height, width)
+  if TENSORFLOW_BACKEND == "REST":
+    return read_image_as_tensor_rest(filename, height, width)
+  elif TENSORFLOW_BACKEND == "BUILTIN":
+    return read_image_as_tensor_builtin(filename, height, width)
 
 def read_image_as_tensor_rest(filename, height, width):
   url = f'http://localhost:5000/v1/pictures/?height={height}&width={width}'
