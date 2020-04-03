@@ -43,11 +43,6 @@ def build_json(tensor):
 
   return data
 
-def get_class_name(class_number):
-  #predicted_class_name = class_names[predicted_class]
-  predicted_class_name = "NOT IMPLEMENTED"
-  return predicted_class_name
-
 def send_request(json_data, model_name, server):
   headers = {"content-type": "application/json"}
   json_response = requests.post(f'{server}/v1/models/{model_name}:predict', data=json_data, headers=headers)
@@ -69,6 +64,11 @@ def print_model_details(server, model_name):
   print(dl_request.content.decode())
   print("====================")
 
+def get_class_name(class_number):
+  #predicted_class_name = class_names[predicted_class]
+  predicted_class_name = "NOT IMPLEMENTED"
+  return predicted_class_name
+
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('--picture')
@@ -81,9 +81,9 @@ def main():
 
   if print_model_details:
     print_model_details(model_name="questionnaire", server="http://localhost:8501")
-    
-  tensor_thingy = read_image_as_tensor(filename, height=224, width=224, tensorflow_backend=tensorflow_backend)
-  json = build_json(tensor_thingy)
+
+  tensor = read_image_as_tensor(filename, height=224, width=224, tensorflow_backend=tensorflow_backend)
+  json = build_json(tensor)
   send_request(json, model_name="questionnaire", server="http://localhost:8501")
 
 if __name__ == '__main__':
